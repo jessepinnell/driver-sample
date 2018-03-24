@@ -23,7 +23,10 @@
 set(DRIVER_SRCS MCP25625Driver.cpp)
 set(DRIVER_HEADERS MCP25625Driver.hpp)
 
+include_directories(${CMAKE_SOURCE_DIR})
 add_library(MCP25625 ${DRIVER_SRCS})
+add_build_macros(MCP25625)
+add_g3logger(MCP25625)
 add_lint(MCP25625 ${DRIVER_SRCS} ${DRIVER_HEADERS})
 
 # TODO(jessepinnell) add libs for SPI

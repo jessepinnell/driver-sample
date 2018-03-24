@@ -25,10 +25,12 @@
 
 #include <stdexcept>
 #include <string>
+#include <memory>
 
 namespace driver_sample
 {
 
+class Log;
 class MCP25625Driver
 {
    public:

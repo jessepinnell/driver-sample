@@ -24,6 +24,10 @@ cmake_minimum_required(VERSION 3.3)
 project(driver-sample)
 enable_language(CXX)
 enable_testing()
+find_package(Threads REQUIRED)
+
+set(CMAKE_SKIP_BUILD_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH "")
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/modules")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -33,12 +37,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+include(g3loggerConfig)
+
 # Bring in project-specific compiler flags, macros, etc.
 include(driver-sample)
 
 include(cpplint)
 
-# TODO(jessepinnell) g3log
 # TODO(jessepinnell) gtest
 # TODO(jessepinnell) valgrind
 # TODO(jessepinnell) doxygen

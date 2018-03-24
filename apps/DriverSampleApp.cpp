@@ -22,19 +22,21 @@
 
 #include <memory>
 #include <iostream>
+#include "log.hpp"
 #include "MCP25625Driver.hpp"
 
 namespace ds = driver_sample;
 
 int main()
 {
-   std::cout << "**************** Simple Driver App ****************\n"
-      << DRIVER_SAMPLE_BUILD_TARGET_NAME
+   ds::Log log("/tmp");
+   LOG_INFO("**************** Simple Driver App ****************");
+   LOG_INFO(DRIVER_SAMPLE_BUILD_TARGET_NAME
       << " built " << DRIVER_SAMPLE_BUILD_TIME
-      << " on " << DRIVER_SAMPLE_BUILD_HOST
-      << "\nKernel build rev. " << DRIVER_SAMPLE_BUILD_KERNEL_RELEASE
-      << "\nSource build rev. " << DRIVER_SAMPLE_BUILD_GIT_REVISION
-      << "\n***************************************************\n" << std::endl;
+      << " on " << DRIVER_SAMPLE_BUILD_HOST);
+   LOG_INFO("Kernel build rev. " << DRIVER_SAMPLE_BUILD_KERNEL_RELEASE);
+   LOG_INFO("Source build rev. " << DRIVER_SAMPLE_BUILD_GIT_REVISION);
+   LOG_INFO("***************************************************");
 
    auto driver = std::make_shared<ds::MCP25625Driver>();
    return 0;

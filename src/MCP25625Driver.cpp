@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <memory>
+#include "include/log.hpp"
 #include "MCP25625Driver.hpp"
 
 namespace driver_sample
@@ -27,12 +29,16 @@ namespace driver_sample
 
 MCP25625Driver::MCP25625Driver()
 {
+   LOG_INFO("Initializing driver...");
    // TODO(jessepinnell)
+   LOG_INFO("Initialized");
 }
 
 MCP25625Driver::~MCP25625Driver()
 {
+   LOG_INFO("Shutting down driver...");
    // TODO(jessepinnell)
+   LOG_INFO("Shut down");
 }
 
 }  // namespace driver_sample

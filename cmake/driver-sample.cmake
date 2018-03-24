@@ -69,3 +69,12 @@ function (add_build_macros target)
    target_compile_definitions(${target} PRIVATE
       DRIVER_SAMPLE_BUILD_GIT_REVISION=\"${DRIVER_SAMPLE_BUILD_GIT_REVISION}\")
 endfunction()
+
+function(add_g3logger target)
+   if (${G3LOG_FOUND})
+      target_compile_definitions(${target} PRIVATE G3LOG_FOUND)
+      target_link_libraries(${target} g3logger)
+   else()
+      message(FATAL_ERROR "g3log is not installed")
+   endif()
+endfunction()
