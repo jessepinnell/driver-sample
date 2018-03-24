@@ -38,7 +38,6 @@ include(driver-sample)
 
 include(cpplint)
 
-# TODO(jessepinnell) build macros
 # TODO(jessepinnell) g3log
 # TODO(jessepinnell) gtest
 # TODO(jessepinnell) valgrind

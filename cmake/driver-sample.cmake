@@ -27,3 +27,45 @@ set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIO
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --track-fds=yes")
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --xml=yes")
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --error-exitcode=1")
+
+# declare macros for making revision available to binaries
+function (add_build_macros target)
+   SET(src_dir ${CMAKE_SOURCE_DIR})
+   target_compile_definitions(${target} PRIVATE
+      DRIVER_SAMPLE_BUILD_TARGET_NAME=\"${target}\")
+
+   execute_process(
+      COMMAND uname -r
+      OUTPUT_VARIABLE DRIVER_SAMPLE_BUILD_KERNEL_RELEASE
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+   target_compile_definitions(${target} PRIVATE
+      DRIVER_SAMPLE_BUILD_KERNEL_RELEASE=\"${DRIVER_SAMPLE_BUILD_KERNEL_RELEASE}\")
+
+   # TODO(jessepinnell) this is the cmake build time; will not update on subsequent makes
+   execute_process(
+      COMMAND date +%T_%D
+      OUTPUT_VARIABLE DRIVER_SAMPLE_BUILD_TIME
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+   target_compile_definitions(${target} PRIVATE
+      DRIVER_SAMPLE_BUILD_TIME=\"${DRIVER_SAMPLE_BUILD_TIME}\")
+
+   execute_process(
+      COMMAND hostname
+      OUTPUT_VARIABLE DRIVER_SAMPLE_BUILD_HOST
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+   target_compile_definitions(${target} PRIVATE
+      DRIVER_SAMPLE_BUILD_HOST=\"${DRIVER_SAMPLE_BUILD_HOST}\")
+
+   execute_process(
+      COMMAND git -C ${CMAKE_SOURCE_DIR} log -1 --pretty=format:%H
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      OUTPUT_VARIABLE DRIVER_SAMPLE_BUILD_GIT_REVISION
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+   string(SUBSTRING ${DRIVER_SAMPLE_BUILD_GIT_REVISION} 0 7 DRIVER_SAMPLE_BUILD_GIT_REVISION)
+   target_compile_definitions(${target} PRIVATE
+      DRIVER_SAMPLE_BUILD_GIT_REVISION=\"${DRIVER_SAMPLE_BUILD_GIT_REVISION}\")
+endfunction()

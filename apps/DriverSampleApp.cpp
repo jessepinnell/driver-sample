@@ -21,12 +21,21 @@
 // SOFTWARE.
 
 #include <memory>
+#include <iostream>
 #include "MCP25625Driver.hpp"
 
 namespace ds = driver_sample;
 
 int main()
 {
+   std::cout << "**************** Simple Driver App ****************\n"
+      << DRIVER_SAMPLE_BUILD_TARGET_NAME
+      << " built " << DRIVER_SAMPLE_BUILD_TIME
+      << " on " << DRIVER_SAMPLE_BUILD_HOST
+      << "\nKernel build rev. " << DRIVER_SAMPLE_BUILD_KERNEL_RELEASE
+      << "\nSource build rev. " << DRIVER_SAMPLE_BUILD_GIT_REVISION
+      << "\n***************************************************\n" << std::endl;
+
    auto driver = std::make_shared<ds::MCP25625Driver>();
    return 0;
 }
