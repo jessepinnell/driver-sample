@@ -1,1 +1,10 @@
-# find_package(Gtest)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+add_executable(testMCP25625Driver testMCP25625Driver.cpp)
+target_link_libraries(testMCP25625Driver MCP25625)
+target_link_libraries(testMCP25625Driver ${GTEST_MAIN_LIBRARY})
+target_link_libraries(testMCP25625Driver ${GTEST_LIBRARY})
+target_link_libraries(testMCP25625Driver ${CMAKE_THREAD_LIBS_INIT})
+add_to_test(UnitTests testMCP25625Driver)
+add_g3logger(testMCP25625Driver)

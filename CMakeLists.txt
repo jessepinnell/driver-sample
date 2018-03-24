@@ -43,8 +43,8 @@ include(g3loggerConfig)
 include(driver-sample)
 
 include(cpplint)
+include(gtest)
 
-# TODO(jessepinnell) gtest
 # TODO(jessepinnell) valgrind
 # TODO(jessepinnell) doxygen
 # TODO(jessepinnell) swig
