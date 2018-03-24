@@ -24,13 +24,14 @@ cmake_minimum_required(VERSION 3.3)
 project(driver-sample)
 enable_language(CXX)
 enable_testing()
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Threads REQUIRED)
+find_package(Valgrind REQUIRED)
 
 set(CMAKE_SKIP_BUILD_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/modules")
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Set where the created files should go
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -45,7 +46,6 @@ include(driver-sample)
 include(cpplint)
 include(gtest)
 
-# TODO(jessepinnell) valgrind
 # TODO(jessepinnell) doxygen
 # TODO(jessepinnell) swig
 # TODO(jessepinnell) cpack

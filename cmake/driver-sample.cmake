@@ -25,7 +25,6 @@ set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIO
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --show-reachable=no")
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --num-callers=20")
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --track-fds=yes")
-set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --xml=yes")
 set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS} --error-exitcode=1")
 
 # declare macros for making revision available to binaries
@@ -83,4 +82,15 @@ function(add_to_test target_name executable)
    add_dependencies(${executable} project_googletest)
    set_target_properties(${executable} PROPERTIES SKIP_BUILD_RPATH FALSE)
    add_test(NAME ${target_name}.${executable} WORKING_DIRECTORY ${CMAKE_BINARY_DIR} COMMAND ${executable})
+
+   # add memory checks if valgrind is installed and reuse the unit test output directory
+   
+   if (${VALGRIND_FOUND})
+      set(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS "${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS}
+         --log-file=${CMAKE_BINARY_DIR}/Testing/${executable}_valgrind.log ${CMAKE_BINARY_DIR}/bin/${executable}")
+      separate_arguments(DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS UNIX_COMMAND ${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS})
+      add_test(NAME ${target_name}.memtest.${executable}
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+         COMMAND ${VALGRIND_PROGRAM} ${DRIVER_SAMPLE_MEMTEST_COMMAND_OPTIONS})
+   endif()
 endfunction()

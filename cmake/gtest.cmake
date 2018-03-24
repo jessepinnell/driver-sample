@@ -1,5 +1,5 @@
 include(ExternalProject)
-# TODO(jessepinnell) optimize this
+# TODO(jessepinnell) optimize this; it tries to clone every make
 set(GTEST_GIT_REPOSITORY "https://github.com/google/googletest.git")
 set(GTEST_BINARY_DIR "${CMAKE_BINARY_DIR}/gtest")
 set(GTEST_SOURCE_DIR "${GTEST_BINARY_DIR}/src")
