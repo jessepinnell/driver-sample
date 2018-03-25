@@ -35,18 +35,18 @@ namespace ds = driver_sample;
 class MCP25625DriverFixture : public ::testing::Test
 {
 public:
-    MCP25625DriverFixture() : log_("/tmp"), driver_(nullptr) {}
+    MCP25625DriverFixture() : log_(), driver_(nullptr) {}
     MCP25625DriverFixture(const MCP25625DriverFixture &) = delete;
     MCP25625DriverFixture &operator=(const MCP25625DriverFixture&) = delete;
     virtual ~MCP25625DriverFixture() {}
 
 protected:
     ds::Log log_;
-    std::unique_ptr<ds::MCP25625Driver> driver_;
+    std::unique_ptr<ds::MCP25625::Driver> driver_;
 };
 
 
 TEST_F(MCP25625DriverFixture, TestInstantiation)
 {
-   driver_ = std::make_unique<ds::MCP25625Driver>();
+   driver_ = std::make_unique<ds::MCP25625::Driver>();
 }

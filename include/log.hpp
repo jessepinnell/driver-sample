@@ -62,12 +62,12 @@ class Log
             }
       };
 
-      explicit Log(const std::string &/*directory*/) : log_worker_(g3::LogWorker::createLogWorker())
+      Log() : log_worker_(g3::LogWorker::createLogWorker())
       {
          // File version
 #if 0
          auto handle = log_worker_->addDefaultLogger(
-               DRIVER_SAMPLE_BUILD_TARGET_NAME, directory);
+               DRIVER_SAMPLE_BUILD_TARGET_NAME, "/tmp");
 #else
          auto sinkHandle = log_worker_->addSink(std::make_unique<LogSink>(),
                                                 &LogSink::ReceiveLogMessage);

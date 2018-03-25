@@ -29,7 +29,7 @@ namespace ds = driver_sample;
 
 int main()
 {
-   ds::Log log("/tmp");
+   ds::Log log();
    LOG_INFO("**************** Simple Driver App ****************");
    LOG_INFO(DRIVER_SAMPLE_BUILD_TARGET_NAME
       << " built " << DRIVER_SAMPLE_BUILD_TIME
@@ -38,6 +38,6 @@ int main()
    LOG_INFO("Source build rev. " << DRIVER_SAMPLE_BUILD_GIT_REVISION);
    LOG_INFO("***************************************************");
 
-   auto driver = std::make_shared<ds::MCP25625Driver>();
+   auto driver = std::make_shared<ds::MCP25625::Driver>();
    return 0;
 }

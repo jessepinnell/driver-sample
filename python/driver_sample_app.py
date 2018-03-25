@@ -27,6 +27,8 @@
 # pylint: disable=unused-argument
 # False positive
 # pylint: disable=wrong-import-position
+# TODO(jessepinnell)
+# pylint: disable=broad-except
 
 import sys
 sys.path.append("../lib")
@@ -39,7 +41,7 @@ import py_driver_sample
 
 ID_ABOUT = 2323
 ID_QUIT = 2324
-ID_DO_SOMETHING = 2325
+ID_RESET = 2325
 
 class DriverSampleApp(wx.Frame):
     """
@@ -54,8 +56,8 @@ class DriverSampleApp(wx.Frame):
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.do_something_button = wx.Button(self, ID_DO_SOMETHING,\
-            "Do Something", size=wx.Size(170, 42))
+        self.do_something_button = wx.Button(self, ID_RESET,\
+            "Reset", size=wx.Size(170, 42))
         main_sizer.Add(self.do_something_button, 0, wx.CENTER, 0)
 
         self.SetSizer(main_sizer)
@@ -71,26 +73,39 @@ class DriverSampleApp(wx.Frame):
 
         self.SetMenuBar(menu_bar)
 
-        wx.EVT_BUTTON(self, ID_DO_SOMETHING, self.on_do_something)
+        wx.EVT_BUTTON(self, ID_RESET, self.on_reset)
         wx.EVT_MENU(self, ID_ABOUT, self.on_about)
         wx.EVT_MENU(self, ID_QUIT, self.on_quit)
 
         self.Show(True)
 
-        driver = py_driver_sample
-        print dir(driver)
+        try:
+            self.log = py_driver_sample.Log()
+            self.driver = py_driver_sample.Driver()
+        except Exception as ex:
+            dialog = wx.MessageDialog(self, "Failed to initialize:\n" + str(ex), "Error", wx.ICON_EXCLAMATION)
+            dialog.ShowModal()
+            dialog.Destroy()
+            self.Close()
 
-    def on_do_something(self, event):
+
+    def on_reset(self, event):
         """
-        Does something
+        Trigger a reset
         """
-        pass
+        try:
+            self.driver.reset()
+        except Exception as ex:
+            dialog = wx.MessageDialog(self, "Failed to reset:\n" + str(ex), "Error", wx.ICON_EXCLAMATION)
+            dialog.ShowModal()
+            dialog.Destroy()
+            self.Close()
 
     def on_about(self, event):
         """
         Open a simple about dialog
         """
-        dialog = wx.MessageDialog(self, "About", "Driver app test for python bindings", wx.OK)
+        dialog = wx.MessageDialog(self, "Driver app test for python bindings", "About", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
 

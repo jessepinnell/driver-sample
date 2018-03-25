@@ -26,19 +26,74 @@
 
 namespace driver_sample
 {
+namespace MCP25625
+{
 
-MCP25625Driver::MCP25625Driver()
+Driver::Driver()
 {
    LOG_INFO("Initializing driver...");
    // TODO(jessepinnell)
    LOG_INFO("Initialized");
 }
 
-MCP25625Driver::~MCP25625Driver()
+Driver::~Driver()
 {
    LOG_INFO("Shutting down driver...");
    // TODO(jessepinnell)
    LOG_INFO("Shut down");
 }
 
+void Driver::reset()
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+}
+
+uint8_t Driver::read(const uint8_t /*address*/)
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+   return 0x0;
+}
+
+uint8_t Driver::readReceiveBuffer(const uint8_t /*receive_buffer*/)
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+   return 0x0;
+}
+
+void Driver::write(const uint8_t /*address*/, const uint8_t /*data*/)
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+}
+
+void Driver::writeTransmitBuffer(const uint8_t /*address*/, const uint8_t /*data*/)
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+}
+
+void Driver::requestToSend(const bool /*rts_txb0*/, const bool /*rts_txb1*/, const bool /*rts_tbx2*/)
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+}
+
+MCP25625::Status Driver::readStatus()
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+   return MCP25625::Status();
+}
+
+MCP25625::ReceiveStatus Driver::readReceiveStatus()
+{
+   // TODO(jessepinnell)
+   throw UnimplementedException(__PRETTY_FUNCTION__);
+   return MCP25625::ReceiveStatus();
+}
+
+}  // namespace MCP25625
 }  // namespace driver_sample

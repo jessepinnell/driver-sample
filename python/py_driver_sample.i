@@ -5,6 +5,7 @@
 %include "std_string.i"
 
 %{
+#include "../include/log.hpp"
 #include "../src/MCP25625Driver.hpp"
 %}
 
@@ -24,4 +25,5 @@
    }
 }
 
+%include "../include/log.hpp"
 %include "../src/MCP25625Driver.hpp"
