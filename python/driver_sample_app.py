@@ -25,10 +25,12 @@
 """ Simple script to illustrate SWIG bindings """
 # Disable for event handlers
 # pylint: disable=unused-argument
-# False positive
-# pylint: disable=wrong-import-position
 # TODO(jessepinnell)
 # pylint: disable=broad-except
+
+# pylint: disable=bad-option-value
+# pylint: disable=import-error
+# pylint: disable=too-many-public-methods
 
 import sys
 sys.path.append("../lib")

@@ -46,11 +46,14 @@ include(driver-sample)
 include(cpplint)
 include(gtest)
 
-find_package(SWIG REQUIRED)
+find_package(SWIG 3 REQUIRED)
 include(${SWIG_USE_FILE})
 # if python3 is used, then the PyInit method is generated insted of init_* so a
 # "ImportError: dynamic module does not define init function (init_blah) will occur"
 find_package(PythonLibs 2.7 REQUIRED)
+find_package(Pylint REQUIRED)
+
+# TODO(jessepinnell) add check for wx python (causes failure in lint build step)
 
 
 # TODO(jessepinnell) doxygen
