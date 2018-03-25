@@ -35,7 +35,7 @@ set(CMAKE_INSTALL_RPATH "")
 
 # Set where the created files should go
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include(g3loggerConfig)
@@ -46,10 +46,15 @@ include(driver-sample)
 include(cpplint)
 include(gtest)
 
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+find_package(PythonLibs)
+
+
 # TODO(jessepinnell) doxygen
-# TODO(jessepinnell) swig
 # TODO(jessepinnell) cpack
 
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(test)
+add_subdirectory(python)
