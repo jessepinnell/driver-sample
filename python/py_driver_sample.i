@@ -1,4 +1,4 @@
-%module driver_sample
+%module py_driver_sample
 
 %include "std_except.i"
 %include "exception.i"

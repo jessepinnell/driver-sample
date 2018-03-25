@@ -30,11 +30,12 @@
 
 import sys
 sys.path.append("../lib")
+sys.path.append("lib")
+sys.path.append("../python")
+sys.path.append("python")
 
 import wx
-# TODO(jessepinnell) sort out the import issue
-# import driver_sample
-
+import py_driver_sample
 
 ID_ABOUT = 2323
 ID_QUIT = 2324
@@ -76,8 +77,8 @@ class DriverSampleApp(wx.Frame):
 
         self.Show(True)
 
-        # driver = driver_sample
-        # print dir(driver)
+        driver = py_driver_sample
+        print dir(driver)
 
     def on_do_something(self, event):
         """

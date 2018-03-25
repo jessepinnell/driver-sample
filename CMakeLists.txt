@@ -48,7 +48,9 @@ include(gtest)
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-find_package(PythonLibs)
+# if python3 is used, then the PyInit method is generated insted of init_* so a
+# "ImportError: dynamic module does not define init function (init_blah) will occur"
+find_package(PythonLibs 2.7 REQUIRED)
 
 
 # TODO(jessepinnell) doxygen
