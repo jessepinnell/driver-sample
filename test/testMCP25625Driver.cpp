@@ -54,39 +54,46 @@ protected:
 
 TEST_F(MCP25625DriverFixture, TestReset)
 {
-   // TODO(jessepinnell) precondition test
-   ASSERT_THROW(driver_->reset(), ds::MCP25625::UnimplementedException);
-   // TODO(jessepinnell) postcondition test
+   // Write a value and verify it
+   uint8_t value;
+   ASSERT_NO_THROW({ driver_->write(0x0, 0x11); });
+   ASSERT_NO_THROW({ value = driver_->read(0x0); });
+   EXPECT_EQ(value, 0x11);
+
+   // Write reset it
+   EXPECT_NO_THROW(driver_->reset());
+
+   // Write read from the same address and expect a 0x0
+   ASSERT_NO_THROW({ value = driver_->read(0x0); });
+   EXPECT_EQ(value, 0x00);
 }
 
 TEST_F(MCP25625DriverFixture, TestRead)
 {
-   const uint8_t ADDRESS = 0x12;
-   // TODO(jessepinnell) precondition test
-   ASSERT_THROW(driver_->read(ADDRESS), ds::MCP25625::UnimplementedException);
-   // TODO(jessepinnell) postcondition test
-}
-
-TEST_F(MCP25625DriverFixture, TestInvalidReadAddress)
-{
-   const uint8_t INVALID_ADDRESS = 0xff;
-   uint8_t value(0);
-   EXPECT_THROW({value = driver_->read(INVALID_ADDRESS);}, ds::MCP25625::UnimplementedException);
-   (void)value;
+   const uint8_t TRANSMIT_ERROR_COUNTER_CAN_ADDRESS = 0x1c;
+   ASSERT_NO_THROW(driver_->read(TRANSMIT_ERROR_COUNTER_CAN_ADDRESS));
 }
 
 TEST_F(MCP25625DriverFixture, TestReadRecieveBuffer)
 {
    // TODO(jessepinnell) precondition test
    const uint8_t ADDRESS = 0x12;
-   ASSERT_THROW(driver_->readReceiveBuffer(ADDRESS), ds::MCP25625::UnimplementedException);
+   ASSERT_NO_THROW(driver_->readReceiveBuffer(ADDRESS));
    // TODO(jessepinnell) postcondition test
 }
 
-TEST_F(MCP25625DriverFixture, TestInvalidReadReceiveBufferAddress)
+TEST_F(MCP25625DriverFixture, TestWrite)
 {
-   const uint8_t INVALID_ADDRESS = 0xff;
-   ASSERT_THROW(driver_->readReceiveBuffer(INVALID_ADDRESS), ds::MCP25625::UnimplementedException);
+   // Write a value, read it and compare to written value, repeat with different value
+   const uint8_t ADDRESS = 0x0;
+   uint8_t value(0x0);
+   EXPECT_NO_THROW({ driver_->write(ADDRESS, 0x11); });
+   ASSERT_NO_THROW({ value = driver_->read(ADDRESS); });
+   EXPECT_EQ(value, 0x11);
+
+   EXPECT_NO_THROW({ driver_->write(ADDRESS, 0xdd); });
+   ASSERT_NO_THROW({ value = driver_->read(ADDRESS); });
+   EXPECT_EQ(value, 0xdd);
 }
 
 TEST_F(MCP25625DriverFixture, TestWriteTransmitBuffer)
@@ -94,38 +101,38 @@ TEST_F(MCP25625DriverFixture, TestWriteTransmitBuffer)
    const uint8_t ADDRESS = 0x12;
    const uint8_t DATA_IN = 0xde;
    // TODO(jessepinnell) precondition test
-   ASSERT_THROW(driver_->writeTransmitBuffer(ADDRESS, DATA_IN), ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ driver_->writeTransmitBuffer(ADDRESS, DATA_IN); });
    // TODO(jessepinnell) postcondition test
 }
 
 TEST_F(MCP25625DriverFixture, TestInvalidWriteTransmitBufferAddress)
 {
    const uint8_t INVALID_ADDRESS = 0x12;
-   ASSERT_THROW(driver_->writeTransmitBuffer(INVALID_ADDRESS, 0x0), ds::MCP25625::UnimplementedException);
+   EXPECT_THROW(driver_->writeTransmitBuffer(INVALID_ADDRESS, 0x0), ds::MCP25625::InvalidArgumentError);
 }
 
 TEST_F(MCP25625DriverFixture, TestRequestToSend)
 {
    const bool RTS_TXB0 = false, RTS_TXB1 = false, RTS_TBX2 = false;
    // TODO(jessepinnell) precondition test
-   ASSERT_THROW(driver_->requestToSend(RTS_TXB0, RTS_TXB1, RTS_TBX2), ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ driver_->requestToSend(RTS_TXB0, RTS_TXB1, RTS_TBX2); });
    // TODO(jessepinnell) postcondition test
 }
 
 TEST_F(MCP25625DriverFixture, TestReadStatus)
 {
    ds::MCP25625::Status starting_status;
-   ASSERT_THROW({ starting_status = driver_->readStatus(); }, ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ starting_status = driver_->readStatus(); });
    // TODO(jessepinnell) force status flag change
-   ASSERT_THROW({ starting_status = driver_->readStatus(); }, ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ starting_status = driver_->readStatus(); });
    // TODO(jessepinnell) postcondition test
 }
 
 TEST_F(MCP25625DriverFixture, TestReceiveStatus)
 {
    ds::MCP25625::ReceiveStatus starting_status;
-   ASSERT_THROW({ starting_status = driver_->readReceiveStatus(); }, ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ starting_status = driver_->readReceiveStatus(); });
    // TODO(jessepinnell) force status flag change
-   ASSERT_THROW({ starting_status = driver_->readReceiveStatus(); }, ds::MCP25625::UnimplementedException);
+   EXPECT_NO_THROW({ starting_status = driver_->readReceiveStatus(); });
    // TODO(jessepinnell) postcondition test
 }
