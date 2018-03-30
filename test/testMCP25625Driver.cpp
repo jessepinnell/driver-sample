@@ -77,9 +77,15 @@ TEST_F(MCP25625DriverFixture, TestRead)
 TEST_F(MCP25625DriverFixture, TestReadRecieveBuffer)
 {
    // TODO(jessepinnell) precondition test
-   const uint8_t ADDRESS = 0x12;
+   const uint8_t ADDRESS = 0x1;
    ASSERT_NO_THROW(driver_->readReceiveBuffer(ADDRESS));
    // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestInvalidReadReceiveBufferAddress)
+{
+   const uint8_t INVALID_ADDRESS = 0x12;
+   EXPECT_THROW(driver_->readReceiveBuffer(INVALID_ADDRESS), ds::MCP25625::InvalidArgumentError);
 }
 
 TEST_F(MCP25625DriverFixture, TestWrite)
