@@ -21,12 +21,13 @@
 // SOFTWARE.
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 #endif
 
+#include <memory>
 #include "log.hpp"
 #include "MCP25625Driver.hpp"
 
@@ -36,6 +37,11 @@ class MCP25625DriverFixture : public ::testing::Test
 {
 public:
     MCP25625DriverFixture() : log_(), driver_(nullptr) {}
+    void SetUp() override
+    {
+       driver_ = std::make_unique<ds::MCP25625::Driver>();
+       ASSERT_NE(driver_, nullptr);
+    }
     MCP25625DriverFixture(const MCP25625DriverFixture &) = delete;
     MCP25625DriverFixture &operator=(const MCP25625DriverFixture&) = delete;
     virtual ~MCP25625DriverFixture() {}
@@ -46,7 +52,80 @@ protected:
 };
 
 
-TEST_F(MCP25625DriverFixture, TestInstantiation)
+TEST_F(MCP25625DriverFixture, TestReset)
 {
-   driver_ = std::make_unique<ds::MCP25625::Driver>();
+   // TODO(jessepinnell) precondition test
+   ASSERT_THROW(driver_->reset(), ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestRead)
+{
+   const uint8_t ADDRESS = 0x12;
+   // TODO(jessepinnell) precondition test
+   ASSERT_THROW(driver_->read(ADDRESS), ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestInvalidReadAddress)
+{
+   const uint8_t INVALID_ADDRESS = 0xff;
+   uint8_t value(0);
+   EXPECT_THROW({value = driver_->read(INVALID_ADDRESS);}, ds::MCP25625::UnimplementedException);
+   (void)value;
+}
+
+TEST_F(MCP25625DriverFixture, TestReadRecieveBuffer)
+{
+   // TODO(jessepinnell) precondition test
+   const uint8_t ADDRESS = 0x12;
+   ASSERT_THROW(driver_->readReceiveBuffer(ADDRESS), ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestInvalidReadReceiveBufferAddress)
+{
+   const uint8_t INVALID_ADDRESS = 0xff;
+   ASSERT_THROW(driver_->readReceiveBuffer(INVALID_ADDRESS), ds::MCP25625::UnimplementedException);
+}
+
+TEST_F(MCP25625DriverFixture, TestWriteTransmitBuffer)
+{
+   const uint8_t ADDRESS = 0x12;
+   const uint8_t DATA_IN = 0xde;
+   // TODO(jessepinnell) precondition test
+   ASSERT_THROW(driver_->writeTransmitBuffer(ADDRESS, DATA_IN), ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestInvalidWriteTransmitBufferAddress)
+{
+   const uint8_t INVALID_ADDRESS = 0x12;
+   ASSERT_THROW(driver_->writeTransmitBuffer(INVALID_ADDRESS, 0x0), ds::MCP25625::UnimplementedException);
+}
+
+TEST_F(MCP25625DriverFixture, TestRequestToSend)
+{
+   const bool RTS_TXB0 = false, RTS_TXB1 = false, RTS_TBX2 = false;
+   // TODO(jessepinnell) precondition test
+   ASSERT_THROW(driver_->requestToSend(RTS_TXB0, RTS_TXB1, RTS_TBX2), ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestReadStatus)
+{
+   ds::MCP25625::Status starting_status;
+   ASSERT_THROW({ starting_status = driver_->readStatus(); }, ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) force status flag change
+   ASSERT_THROW({ starting_status = driver_->readStatus(); }, ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
+}
+
+TEST_F(MCP25625DriverFixture, TestReceiveStatus)
+{
+   ds::MCP25625::ReceiveStatus starting_status;
+   ASSERT_THROW({ starting_status = driver_->readReceiveStatus(); }, ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) force status flag change
+   ASSERT_THROW({ starting_status = driver_->readReceiveStatus(); }, ds::MCP25625::UnimplementedException);
+   // TODO(jessepinnell) postcondition test
 }
