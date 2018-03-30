@@ -30,4 +30,4 @@ add_g3logger(MCP25625)
 add_lint(MCP25625 ${DRIVER_SRCS} ${DRIVER_HEADERS})
 
 # TODO(jessepinnell) add libs for SPI
-target_link_libraries(MCP25625)
+target_link_libraries(MCP25625 bcm2835)

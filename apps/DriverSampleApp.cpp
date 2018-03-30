@@ -29,7 +29,7 @@ namespace ds = driver_sample;
 
 int main()
 {
-   ds::Log log();
+   ds::Log log;
    LOG_INFO("**************** Simple Driver App ****************");
    LOG_INFO(DRIVER_SAMPLE_BUILD_TARGET_NAME
       << " built " << DRIVER_SAMPLE_BUILD_TIME
@@ -39,5 +39,26 @@ int main()
    LOG_INFO("***************************************************");
 
    auto driver = std::make_shared<ds::MCP25625::Driver>();
+
+   driver->reset();
+   driver->read(0x12);
+   driver->readReceiveBuffer(0);
+   driver->readReceiveBuffer(1);
+   driver->readReceiveBuffer(2);
+   driver->readReceiveBuffer(3);
+
+   driver->write(0xde, 0xbe);
+
+   driver->writeTransmitBuffer(3, 0xef);
+
+   driver->requestToSend(false, false, true);
+   driver->requestToSend(true, false, true);
+   driver->requestToSend(false, true, true);
+
+   auto status = driver->readStatus();
+   (void)status;
+
+   auto receive_status = driver->readReceiveStatus();
+   (void)receive_status;
    return 0;
 }

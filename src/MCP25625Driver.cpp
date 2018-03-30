@@ -20,79 +20,211 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// On Pi:
+#include <bcm2835.h>
+
 #include <memory>
+#include <iomanip>
 #include "include/log.hpp"
 #include "MCP25625Driver.hpp"
+
 
 namespace driver_sample
 {
 namespace MCP25625
 {
 
-Driver::Driver()
+Driver::Driver() : device_mutex_()
 {
    LOG_INFO("Initializing driver...");
-   // TODO(jessepinnell)
+   if (!bcm2835_init())
+   {
+      throw InitializationError("bcm2835_spi_init() failed");
+   }
+
+   if (!bcm2835_spi_begin())
+   {
+      throw InitializationError("bcm2835_spi_begin() failed");
+   }
    LOG_INFO("Initialized");
 }
 
 Driver::~Driver()
 {
    LOG_INFO("Shutting down driver...");
-   // TODO(jessepinnell)
+   bcm2835_spi_end();
    LOG_INFO("Shut down");
 }
 
 void Driver::reset()
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   LOG_INFO("Reset");
+   bcm2835_spi_write(0b1100'0000);
 }
 
-uint8_t Driver::read(const uint8_t /*address*/)
+uint8_t Driver::read(const uint8_t address)
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
-   return 0x0;
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   bcm2835_spi_write(0b0000'0011);
+   uint8_t return_value = bcm2835_spi_transfer(address);
+
+   LOG_INFO("Read 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(return_value)
+         << " from 0x" << std::setw(2) << static_cast<uint16_t>(address));
+
+   return return_value;
 }
 
-uint8_t Driver::readReceiveBuffer(const uint8_t /*receive_buffer*/)
+uint8_t Driver::readReceiveBuffer(const uint8_t receive_buffer)
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
-   return 0x0;
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   if (receive_buffer > 3)
+   {
+      throw InvalidArgumentError("Address buffer must be in [0..3]");
+   }
+
+   const uint8_t command = 0b0110'1000 | ((receive_buffer & 0x3) << 1);
+   const uint8_t return_value = bcm2835_spi_transfer(command);
+
+   LOG_INFO("Read 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(return_value)
+         << " from 0x" << std::setw(2) << static_cast<uint16_t>(receive_buffer)
+         << " (command byte: 0x" << std::setw(2) << static_cast<uint16_t>(command) << ")");
+
+   return return_value;
 }
 
-void Driver::write(const uint8_t /*address*/, const uint8_t /*data*/)
+void Driver::write(const uint8_t address, const uint8_t data)
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   char command[] = { 0b0000'0010, address, data, };
+   bcm2835_spi_transfern(command, 3);
+
+   LOG_INFO("Wrote 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(data)
+         << " to 0x" << std::setw(2) << static_cast<uint16_t>(address));
 }
 
-void Driver::writeTransmitBuffer(const uint8_t /*address*/, const uint8_t /*data*/)
+void Driver::writeTransmitBuffer(const uint8_t address, const uint8_t data)
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   if (address > 6)
+   {
+      throw InvalidArgumentError("Address buffer must be in [0..5]");
+   }
+
+   char command[] = { static_cast<char>(0b0100'0000 | address), data };
+   bcm2835_spi_transfern(command, 2);
+
+   LOG_INFO("Wrote 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(data)
+         << " to 0x" << std::setw(2) << static_cast<uint16_t>(address));
 }
 
-void Driver::requestToSend(const bool /*rts_txb0*/, const bool /*rts_txb1*/, const bool /*rts_tbx2*/)
+void Driver::requestToSend(const bool rts_txb0, const bool rts_txb1, const bool rts_txb2)
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   uint8_t command(0b1000'000 | (rts_txb0 << 2) | (rts_txb1 << 1) | rts_txb2);
+   bcm2835_spi_write(command);
+
+   LOG_INFO("Wrote RTS values txb0(" << std::boolalpha << rts_txb0
+         << "), txb1(" << rts_txb1 << "), txb2(" << rts_txb2
+         << "), command: 0x" << std::setw(2) << static_cast<uint16_t>(command));
 }
 
 MCP25625::Status Driver::readStatus()
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
-   return MCP25625::Status();
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   uint8_t return_value = bcm2835_spi_transfer(0b1010'0000);
+
+   MCP25625::Status status {
+      return_value & 0b0000'0001,
+      return_value & 0b0000'0010,
+      return_value & 0b0000'0100,
+      return_value & 0b0000'1000,
+      return_value & 0b0001'0000,
+      return_value & 0b0010'0000,
+      return_value & 0b0100'0000,
+      return_value & 0b1000'0000
+   };
+
+   LOG_INFO("Read read status " << status);
+   return status;
 }
 
 MCP25625::ReceiveStatus Driver::readReceiveStatus()
 {
-   // TODO(jessepinnell)
-   throw UnimplementedException(__PRETTY_FUNCTION__);
-   return MCP25625::ReceiveStatus();
+   std::lock_guard<std::mutex> mutex_(device_mutex_);
+   uint8_t return_value = bcm2835_spi_transfer(0b1011'0000);
+
+   ReceiveMessage receive_message(ReceiveMessage::NO_RX_MESSAGE);
+   switch (return_value & 0b1100'0000)
+   {
+      case (0b0000'0000):
+         receive_message = ReceiveMessage::NO_RX_MESSAGE;
+         break;
+      case (0b0100'0000):
+         receive_message = ReceiveMessage::MESSAGE_RXB0;
+         break;
+      case (0b1000'0000):
+         receive_message = ReceiveMessage::MESSAGE_RXB1;
+         break;
+      case (0b1100'0000):
+         receive_message = ReceiveMessage::MESSAGE_BOTH;
+         break;
+   }
+
+   MessageType message_status(MessageType::STANDARD_DATA_FRAME);
+   switch (return_value & 0b0011'0000)
+   {
+      case (0b0000'0000):
+         message_status = MessageType::STANDARD_DATA_FRAME;
+         break;
+      case (0b0001'0000):
+         message_status = MessageType::STANDARD_REMOTE_FRAME;
+         break;
+      case (0b0010'0000):
+         message_status = MessageType::EXTENDED_DATA_FRAME;
+         break;
+      case (0b0011'0000):
+         message_status = MessageType::EXTENDED_REMOTE_FRAME;
+         break;
+   }
+
+   FilterMatch filter_match(FilterMatch::RXF0);
+   switch (return_value & 0b0000'0111)
+   {
+      case (0b0000'0000):
+         filter_match = FilterMatch::RXF0;
+         break;
+      case (0b0000'0001):
+         filter_match = FilterMatch::RXF1;
+         break;
+      case (0b0000'0010):
+         filter_match = FilterMatch::RXF2;
+         break;
+      case (0b0000'0011):
+         filter_match = FilterMatch::RXF3;
+         break;
+      case (0b0000'0100):
+         filter_match = FilterMatch::RXF4;
+         break;
+      case (0b0000'0101):
+         filter_match = FilterMatch::RXF5;
+         break;
+      case (0b0000'0110):
+         filter_match = FilterMatch::RXF0_ROLLOVER_RXB1;
+         break;
+      case (0b0000'0111):
+         filter_match = FilterMatch::RXF1_ROLLOVER_RXB1;
+         break;
+   }
+
+   MCP25625::ReceiveStatus status {
+      receive_message,
+      message_status,
+      filter_match
+   };
+
+   LOG_INFO("Read receive status " << status);
+   return status;
 }
 
 }  // namespace MCP25625

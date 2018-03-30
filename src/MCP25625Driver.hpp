@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <string>
 #include <memory>
+#include <iostream>
 
 namespace driver_sample
 {
@@ -85,6 +86,20 @@ struct Status
       tx1if_ = false,    // TX1IF (CANINTF Register)
       tx2req_ = false,   // TXREQ (TXB2CTRL Register)
       tx2if_ = false;    // TX2IF (CANINTF Register)
+
+   friend std::ostream &operator<<(std::ostream &os, const Status &status)
+   {
+      os << std::boolalpha <<
+         "\nRX0IF (CANINTF Register): " << status.rx0if_ <<
+         "\nRX1IF (CANINTF Register): "  << status.rx1if_ <<
+         "\nTXREQ (TXB0CTRL Register): " << status.tx0req_ <<
+         "\nTX0IF (CANINTF Register): " << status.tx0if_ <<
+         "\nTXREQ (TXB1CTRL Register): " << status.tx1req_ <<
+         "\nTX1IF (CANINTF Register): " << status.tx1if_ <<
+         "\nTXREQ (TXB2CTRL Register): " << status.tx2req_ <<
+         "\nTX2IF (CANINTF Register): " << status.tx2if_;
+      return os;
+   }
 };
 
 enum class ReceiveMessage
@@ -118,8 +133,75 @@ enum class FilterMatch
 struct ReceiveStatus
 {
    ReceiveMessage receive_message_;
-   MessageType message_status_;
+   MessageType message_type_;
    FilterMatch filter_match_;
+
+   friend std::ostream &operator<<(std::ostream &os, const ReceiveStatus &status)
+   {
+      os << "Receive Message: ";
+      switch (status.receive_message_)
+      {
+         case ReceiveMessage::NO_RX_MESSAGE:
+            os << "NO_RX_MESSAGE";
+            break;
+         case ReceiveMessage::MESSAGE_RXB0:
+            os << "MESSAGE_RXB0";
+            break;
+         case ReceiveMessage::MESSAGE_RXB1:
+            os << "MESSAGE_RXB1";
+            break;
+         case ReceiveMessage::MESSAGE_BOTH:
+            os << "MESSAGE_BOTH";
+            break;
+      }
+
+      os << "\nMessage Type: ";
+      switch (status.message_type_)
+      {
+         case MessageType::STANDARD_DATA_FRAME:
+            os << "STANDARD_DATA_FRAME";
+            break;
+         case MessageType::STANDARD_REMOTE_FRAME:
+            os << "STANDARD_REMOTE_FRAME";
+            break;
+         case MessageType::EXTENDED_DATA_FRAME:
+            os << "EXTENDED_DATA_FRAME";
+            break;
+         case MessageType::EXTENDED_REMOTE_FRAME:
+            os << "EXTENDED_REMOTE_FRAME";
+            break;
+      }
+
+      os << "\nFilter match: ";
+      switch (status.filter_match_)
+      {
+         case FilterMatch::RXF0:
+            os << "RXF0";
+            break;
+         case FilterMatch::RXF1:
+            os << "RXF1";
+            break;
+         case FilterMatch::RXF2:
+            os << "RXF2";
+            break;
+         case FilterMatch::RXF3:
+            os << "RXF3";
+            break;
+         case FilterMatch::RXF4:
+            os << "RXF4";
+            break;
+         case FilterMatch::RXF5:
+            os << "RXF5";
+            break;
+         case FilterMatch::RXF0_ROLLOVER_RXB1:
+            os << "RXF0_ROLLOVER_RXB1";
+            break;
+         case FilterMatch::RXF1_ROLLOVER_RXB1:
+            os << "RXF1_ROLLOVER_RXB1";
+            break;
+      }
+      return os;
+   }
 };
 
 class Driver
@@ -176,9 +258,9 @@ class Driver
        * 
        * @param rts_txb0 Do request-to-send for TXB0
        * @param rts_txb1 Do request-to-send for TXB1
-       * @param rts_tbx2 Do request-to-send for TXB2
+       * @param rts_txb2 Do request-to-send for TXB2
        */
-      void requestToSend(const bool rts_txb0, const bool rts_txb1, const bool rts_tbx2);
+      void requestToSend(const bool rts_txb0, const bool rts_txb1, const bool rts_txb2);
 
       /** 
        * @brief Read the message reception and transmission status
@@ -195,6 +277,7 @@ class Driver
       MCP25625::ReceiveStatus readReceiveStatus();
 
    private:
+      std::mutex device_mutex_;
 };
 
 }  // namespace MCP25625
