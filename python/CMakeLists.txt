@@ -14,6 +14,7 @@ add_g3logger(_py_driver_sample)
 
 set(PYLINT pylint -d wrong-import-position -f colorized --rcfile=${CMAKE_SOURCE_DIR}/python/.pylintrc)
 add_custom_command(TARGET _py_driver_sample COMMAND ${PYLINT} ${CMAKE_SOURCE_DIR}/python/driver_sample_app.py VERBATIM)
+add_custom_command(TARGET _py_driver_sample COMMAND ${PYLINT} ${CMAKE_SOURCE_DIR}/python/driver_sample_no_ui_app.py VERBATIM)
 
 add_custom_target(copy_python_scripts)
 add_custom_command(

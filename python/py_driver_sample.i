@@ -1,5 +1,6 @@
 %module py_driver_sample
 
+%include "stdint.i"
 %include "std_except.i"
 %include "exception.i"
 %include "std_string.i"

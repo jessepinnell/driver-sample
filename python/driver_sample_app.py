@@ -44,6 +44,8 @@ import py_driver_sample
 ID_ABOUT = 2323
 ID_QUIT = 2324
 ID_RESET = 2325
+ID_READ = 2326
+ID_WRITE = 2327
 
 class DriverSampleApp(wx.Frame):
     """
@@ -54,13 +56,23 @@ class DriverSampleApp(wx.Frame):
         """
         Create the frame, lay out controls, and set up event handlers
         """
-        wx.Frame.__init__(self, parent, wx.ID_ANY, title, size=(200, 120), style=(wx.CLOSE_BOX))
+        wx.Frame.__init__(self, parent, wx.ID_ANY, title, size=(200, 220), style=(wx.CLOSE_BOX))
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.do_something_button = wx.Button(self, ID_RESET,\
-            "Reset", size=wx.Size(170, 42))
-        main_sizer.Add(self.do_something_button, 0, wx.CENTER, 0)
+        reset_button = wx.Button(self, ID_RESET, "Reset", size=wx.Size(170, 42))
+        main_sizer.Add(reset_button, 0, wx.CENTER, 0)
+
+        read_sizer = wx.BoxSizer(wx.VERTICAL)
+        read_button = wx.Button(self, ID_READ, "Read", size=wx.Size(170, 42))
+        read_sizer.Add(read_button, 0, wx.CENTER, 0)
+        main_sizer.Add(read_sizer, 0, wx.CENTER, 0)
+
+        write_sizer = wx.BoxSizer(wx.VERTICAL)
+        write_button = wx.Button(self, ID_WRITE, "Write", size=wx.Size(170, 42))
+        write_sizer.Add(write_button, 0, wx.CENTER, 0)
+        main_sizer.Add(write_sizer, 0, wx.CENTER, 0)
+
 
         self.SetSizer(main_sizer)
         self.Center()

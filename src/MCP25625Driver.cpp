@@ -22,6 +22,7 @@
 
 // On Pi:
 #include <bcm2835.h>
+#include <unistd.h>
 
 #include <memory>
 #include <iomanip>
@@ -44,7 +45,14 @@ Driver::Driver() : device_mutex_()
 
    if (!bcm2835_spi_begin())
    {
-      throw InitializationError("bcm2835_spi_begin() failed");
+      if (geteuid() == 0)
+      {
+         throw InitializationError("bcm2835_spi_begin() failed");
+      }
+      else
+      {
+         LOG_INFO("Not running as root, bcm2835_spi_begin() unavailable");
+      }
    }
    LOG_INFO("Initialized");
 }
