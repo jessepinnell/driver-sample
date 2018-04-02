@@ -104,7 +104,7 @@ uint8_t Driver::readReceiveBuffer(const uint8_t receive_buffer)
 void Driver::write(const uint8_t address, const uint8_t data)
 {
    std::lock_guard<std::mutex> mutex_(device_mutex_);
-   char command[] = { 0b0000'0010, address, data, };
+   char command[] = { 0b0000'0010, static_cast<char>(address), static_cast<char>(data) };
    bcm2835_spi_transfern(command, 3);
 
    LOG_INFO("Wrote 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(data)
@@ -119,7 +119,7 @@ void Driver::writeTransmitBuffer(const uint8_t address, const uint8_t data)
       throw InvalidArgumentError("Address buffer must be in [0..5]");
    }
 
-   char command[] = { static_cast<char>(0b0100'0000 | address), data };
+   char command[] = { static_cast<char>(0b0100'0000 | address), static_cast<char>(data) };
    bcm2835_spi_transfern(command, 2);
 
    LOG_INFO("Wrote 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(data)
