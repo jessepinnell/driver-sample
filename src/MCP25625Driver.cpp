@@ -54,6 +54,8 @@ Driver::Driver() : device_mutex_()
          LOG_INFO("Not running as root, bcm2835_spi_begin() unavailable");
       }
    }
+   bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_16384);
+
    LOG_INFO("Initialized");
 }
 
@@ -68,14 +70,15 @@ void Driver::reset()
 {
    std::lock_guard<std::mutex> mutex_(device_mutex_);
    LOG_INFO("Reset");
-   bcm2835_spi_write(0b1100'0000);
+   bcm2835_spi_transfer(0b1100'0000);
 }
 
 uint8_t Driver::read(const uint8_t address)
 {
    std::lock_guard<std::mutex> mutex_(device_mutex_);
-   bcm2835_spi_write(0b0000'0011);
-   uint8_t return_value = bcm2835_spi_transfer(address);
+   char buffer[3] = { 0b0000'0011, address, 0xff };
+   bcm2835_spi_transfern(buffer, 3);
+   uint8_t return_value = buffer[2];
 
    LOG_INFO("Read 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(return_value)
          << " from 0x" << std::setw(2) << static_cast<uint16_t>(address));
@@ -92,7 +95,9 @@ uint8_t Driver::readReceiveBuffer(const uint8_t receive_buffer)
    }
 
    const uint8_t command = 0b0110'1000 | ((receive_buffer & 0x3) << 1);
-   const uint8_t return_value = bcm2835_spi_transfer(command);
+   char buffer[2] = { command, 0x0 };
+   bcm2835_spi_transfern(buffer, 2);
+   uint8_t return_value = buffer[1];
 
    LOG_INFO("Read 0x" << std::setfill('0') << std::hex << static_cast<uint16_t>(return_value)
          << " from 0x" << std::setw(2) << static_cast<uint16_t>(receive_buffer)
@@ -140,7 +145,8 @@ void Driver::requestToSend(const bool rts_txb0, const bool rts_txb1, const bool 
 MCP25625::Status Driver::readStatus()
 {
    std::lock_guard<std::mutex> mutex_(device_mutex_);
-   uint8_t return_value = bcm2835_spi_transfer(0b1010'0000);
+   bcm2835_spi_transfer(0b1010'0000);
+   uint8_t return_value = bcm2835_spi_transfer(0xff);
 
    MCP25625::Status status {
       return_value & 0b0000'0001,
@@ -160,7 +166,8 @@ MCP25625::Status Driver::readStatus()
 MCP25625::ReceiveStatus Driver::readReceiveStatus()
 {
    std::lock_guard<std::mutex> mutex_(device_mutex_);
-   uint8_t return_value = bcm2835_spi_transfer(0b1011'0000);
+   bcm2835_spi_transfer(0b1011'0000);
+   uint8_t return_value = bcm2835_spi_transfer(0xff);
 
    ReceiveMessage receive_message(ReceiveMessage::NO_RX_MESSAGE);
    switch (return_value & 0b1100'0000)
