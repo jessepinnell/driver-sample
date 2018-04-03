@@ -172,63 +172,72 @@ MCP25625::ReceiveStatus Driver::readReceiveStatus()
    ReceiveMessage receive_message(ReceiveMessage::NO_RX_MESSAGE);
    switch (return_value & 0b1100'0000)
    {
-      case (0b0000'0000):
+      case 0b0000'0000:
          receive_message = ReceiveMessage::NO_RX_MESSAGE;
          break;
-      case (0b0100'0000):
+      case 0b0100'0000:
          receive_message = ReceiveMessage::MESSAGE_RXB0;
          break;
-      case (0b1000'0000):
+      case 0b1000'0000:
          receive_message = ReceiveMessage::MESSAGE_RXB1;
          break;
-      case (0b1100'0000):
+      case 0b1100'0000:
          receive_message = ReceiveMessage::MESSAGE_BOTH;
+         break;
+      default:
+         throw CommunicationError("Invalid receive message value");
          break;
    }
 
    MessageType message_status(MessageType::STANDARD_DATA_FRAME);
    switch (return_value & 0b0011'0000)
    {
-      case (0b0000'0000):
+      case 0b0000'0000:
          message_status = MessageType::STANDARD_DATA_FRAME;
          break;
-      case (0b0001'0000):
+      case 0b0001'0000:
          message_status = MessageType::STANDARD_REMOTE_FRAME;
          break;
-      case (0b0010'0000):
+      case 0b0010'0000:
          message_status = MessageType::EXTENDED_DATA_FRAME;
          break;
-      case (0b0011'0000):
+      case 0b0011'0000:
          message_status = MessageType::EXTENDED_REMOTE_FRAME;
+         break;
+      default:
+         throw CommunicationError("Invalid message status value");
          break;
    }
 
    FilterMatch filter_match(FilterMatch::RXF0);
    switch (return_value & 0b0000'0111)
    {
-      case (0b0000'0000):
+      case 0b0000'0000:
          filter_match = FilterMatch::RXF0;
          break;
-      case (0b0000'0001):
+      case 0b0000'0001:
          filter_match = FilterMatch::RXF1;
          break;
-      case (0b0000'0010):
+      case 0b0000'0010:
          filter_match = FilterMatch::RXF2;
          break;
-      case (0b0000'0011):
+      case 0b0000'0011:
          filter_match = FilterMatch::RXF3;
          break;
-      case (0b0000'0100):
+      case 0b0000'0100:
          filter_match = FilterMatch::RXF4;
          break;
-      case (0b0000'0101):
+      case 0b0000'0101:
          filter_match = FilterMatch::RXF5;
          break;
-      case (0b0000'0110):
+      case 0b0000'0110:
          filter_match = FilterMatch::RXF0_ROLLOVER_RXB1;
          break;
-      case (0b0000'0111):
+      case 0b0000'0111:
          filter_match = FilterMatch::RXF1_ROLLOVER_RXB1;
+         break;
+      default:
+         throw CommunicationError("Invalid filter match value");
          break;
    }
 

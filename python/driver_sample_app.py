@@ -92,6 +92,7 @@ class RegisterGrid(wx.grid.Grid):
         self.SetDefaultColSize(30)
         self.SetFont(grid_font)
         self.SetRowLabelSize(30)
+        self.SetLabelFont(grid_font)
 
         self.skip_cell = None
 
@@ -121,7 +122,7 @@ class DriverSampleApp(wx.Frame):
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        reset_button = wx.Button(self, ID_RESET, "Reset", size=wx.Size(120, 20))
+        reset_button = wx.Button(self, ID_RESET, "Make chip stop working (reset)", size=wx.Size(220, 23))
         main_sizer.Add(reset_button, 0, wx.CENTER, 0)
 
         register_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -158,7 +159,7 @@ class DriverSampleApp(wx.Frame):
         try:
             self.log = py_driver_sample.Log()
             self.driver = py_driver_sample.Driver()
-            self.timer.Start(5000)
+            self.timer.Start(1000)
         except Exception as ex:
             dialog = wx.MessageDialog(self, "Failed to initialize:\n" + str(ex)\
                 + "\n\n*** Using simulator ***", "Error", wx.ICON_EXCLAMATION)
@@ -189,6 +190,7 @@ class DriverSampleApp(wx.Frame):
     def on_grid_cell_selected(self, event):
         """ a cell has been selected so skip updating it """
         self.skip_cell = (event.Row, event.Col)
+        event.Skip()
 
     def on_grid_edited(self, event):
         """ ignore handling changes until enter is pressed """
